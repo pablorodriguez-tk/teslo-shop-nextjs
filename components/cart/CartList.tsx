@@ -68,7 +68,6 @@ export const CartList: FC<Props> = ({ editable = false }) => {
               </Button>
             )}
           </Grid>
-          {product.title}
         </Grid>
       ))}
     </>
