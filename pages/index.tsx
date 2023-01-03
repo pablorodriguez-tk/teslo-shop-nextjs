@@ -2,11 +2,14 @@ import { Typography } from "@mui/material";
 import { Inter } from "@next/font/google";
 import { ShopLayout } from "../components/layouts";
 import { ProductList } from "../components/products";
-import { initialData } from "../database/products";
+import { FullScrrenLoading } from "../components/ui";
+import { useProducts } from "../hooks";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export default function HomePage() {
+  const { products, isLoading } = useProducts("/products");
+
   return (
     <ShopLayout
       title={"Teslo-Shop - Home"}
@@ -18,7 +21,7 @@ export default function Home() {
       <Typography variant="h2" component="h2" sx={{ mb: 1 }}>
         Todos los productos
       </Typography>
-      <ProductList products={initialData.products as any} />
+      {isLoading ? <FullScrrenLoading /> : <ProductList products={products} />}
     </ShopLayout>
   );
 }
