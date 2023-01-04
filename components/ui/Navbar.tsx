@@ -10,8 +10,11 @@ import {
   Typography,
 } from "@mui/material";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 
 export const Navbar = () => {
+  const { asPath } = useRouter();
+
   return (
     <AppBar>
       <Toolbar>
@@ -27,17 +30,55 @@ export const Navbar = () => {
         <Box sx={{ display: { xs: "none", sm: "block" } }}>
           <NextLink href="/category/men" passHref legacyBehavior>
             <Link>
-              <Button>Hombres</Button>
+              <Button
+                variant="contained"
+                color={asPath === "/category/men" ? "primary" : "info"}
+                sx={{
+                  ":hover": {
+                    backgroundColor:
+                      asPath === "/category/men" ? "primary.main" : "info.main",
+                    transition: "all 0.3s ease-in-out",
+                  },
+                }}
+              >
+                Hombres
+              </Button>
             </Link>
           </NextLink>
           <NextLink href="/category/women" passHref legacyBehavior>
             <Link>
-              <Button>Mujeres</Button>
+              <Button
+                variant="contained"
+                color={asPath === "/category/women" ? "primary" : "info"}
+                sx={{
+                  ":hover": {
+                    backgroundColor:
+                      asPath === "/category/women"
+                        ? "primary.main"
+                        : "info.main",
+                    transition: "all 0.3s ease-in-out",
+                  },
+                }}
+              >
+                Mujeres
+              </Button>
             </Link>
           </NextLink>
           <NextLink href="/category/kid" passHref legacyBehavior>
             <Link>
-              <Button>Niños</Button>
+              <Button
+                variant="contained"
+                color={asPath === "/category/kid" ? "primary" : "info"}
+                sx={{
+                  ":hover": {
+                    backgroundColor:
+                      asPath === "/category/kid" ? "primary.main" : "info.main",
+                    transition: "all 0.3s ease-in-out",
+                  },
+                }}
+              >
+                Niños
+              </Button>
             </Link>
           </NextLink>
         </Box>
