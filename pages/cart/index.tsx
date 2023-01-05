@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { CartList, OrderSummary } from "../../components/cart";
 
-export const CartPage = () => {
+const CartPage = () => {
   return (
     <ShopLayout
       title="Carrito - 3"

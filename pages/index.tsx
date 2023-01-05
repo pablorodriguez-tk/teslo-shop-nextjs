@@ -1,11 +1,8 @@
 import { Typography } from "@mui/material";
-import { Inter } from "@next/font/google";
 import { ShopLayout } from "../components/layouts";
 import { ProductList } from "../components/products";
 import { FullScrrenLoading } from "../components/ui";
 import { useProducts } from "../hooks";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function HomePage() {
   const { products, isLoading } = useProducts("/products");

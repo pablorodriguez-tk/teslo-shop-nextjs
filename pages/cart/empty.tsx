@@ -3,7 +3,7 @@ import { Box, Link, Typography } from "@mui/material";
 import { ShopLayout } from "../../components/layouts";
 import NextLink from "next/link";
 
-export const EmptyPage = () => {
+const EmptyPage = () => {
   return (
     <ShopLayout
       title="Carrito vacio"

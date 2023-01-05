@@ -1,13 +1,10 @@
 import { Typography } from "@mui/material";
-import { Inter } from "@next/font/google";
 import { ShopLayout } from "../../components/layouts";
 import { ProductList } from "../../components/products";
 import { FullScrrenLoading } from "../../components/ui";
 import { useProducts } from "../../hooks";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export default function KidPage() {
+const KidPage = () => {
   const { products, isLoading } = useProducts("/products?gender=kid");
 
   return (
@@ -24,4 +21,6 @@ export default function KidPage() {
       {isLoading ? <FullScrrenLoading /> : <ProductList products={products} />}
     </ShopLayout>
   );
-}
+};
+
+export default KidPage;
