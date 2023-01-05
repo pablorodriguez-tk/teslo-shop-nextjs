@@ -25,12 +25,18 @@ import {
   VpnKeyOutlined,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UiContext } from "../../context";
 
 export const SideMenu = () => {
-  const { isMenuOpen, toogleSideMenu } = useContext(UiContext);
   const router = useRouter();
+  const { isMenuOpen, toogleSideMenu } = useContext(UiContext);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const onSearchTerm = () => {
+    if (searchTerm.trim().length === 0) return;
+    navigateTo(`/search/${searchTerm.trim()}`);
+  };
 
   const navigateTo = (url: string) => {
     toogleSideMenu();
@@ -49,9 +55,12 @@ export const SideMenu = () => {
             <Input
               type="text"
               placeholder="Buscar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && onSearchTerm()}
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton aria-label="toggle password visibility">
+                  <IconButton onClick={onSearchTerm}>
                     <SearchOutlined />
                   </IconButton>
                 </InputAdornment>
