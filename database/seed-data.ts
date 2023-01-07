@@ -32,13 +32,13 @@ export const initialData: SeedData = {
   users: [
     {
       name: "Pablo Rodriguez",
-      email: "pablo@pablo.com",
+      email: "pablo@google.com",
       password: bcrypt.hashSync("123456"),
       role: "admin",
     },
     {
       name: "Eduardo Rios",
-      email: "eduardo@eduardo.com",
+      email: "eduardo@google.com",
       password: bcrypt.hashSync("123456"),
       role: "client",
     },
