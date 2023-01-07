@@ -5,13 +5,18 @@ import { ItemCounter } from "../../components/ui";
 import { ICartProduct, IProduct, ISize } from "../../interfaces";
 import { dbProducts } from "../../database";
 import { GetStaticProps, GetStaticPaths, NextPage } from "next";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useRouter } from "next/router";
+import { CartContext } from "../../context";
 
 interface Props {
   product: IProduct;
 }
 
 const ProductPage: NextPage<Props> = ({ product }) => {
+  const router = useRouter();
+  const { addProductToCart, cart } = useContext(CartContext);
+
   const [tempCardProduct, setTempCardProduct] = useState<ICartProduct>({
     _id: product._id,
     image: product.images[0],
@@ -38,7 +43,10 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   };
 
   const onAddProduct = () => {
-    console.log({ tempCardProduct });
+    if (!tempCardProduct.size) return;
+
+    addProductToCart({ ...tempCardProduct });
+    router.push("/cart");
   };
 
   return (
