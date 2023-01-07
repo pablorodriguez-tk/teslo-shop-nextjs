@@ -1,6 +1,7 @@
-import { FC, PropsWithChildren, useReducer } from "react";
+import { FC, PropsWithChildren, useEffect, useReducer } from "react";
 import { ICartProduct } from "../../interfaces";
 import { CartContext, cartReducer } from "./";
+import Cookies from "js-cookie";
 
 export interface CartState {
   cart: ICartProduct[];
@@ -12,6 +13,18 @@ const CART_INITIAL_STATE: CartState = {
 
 export const CartProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, CART_INITIAL_STATE);
+
+  useEffect(() => {
+    Cookies.get("cart") &&
+      dispatch({
+        type: "[Cart] - LoadCart from cookies | storage",
+        payload: JSON.parse(Cookies.get("cart") || "[]"),
+      });
+  }, []);
+
+  useEffect(() => {
+    Cookies.set("cart", JSON.stringify(state.cart));
+  }, [state.cart]);
 
   const addProductToCart = (product: ICartProduct) => {
     const productInCart = state.cart.some((p) => p._id === product._id);
@@ -37,8 +50,6 @@ export const CartProvider: FC<PropsWithChildren> = ({ children }) => {
     const updatedCart = state.cart.map((p) => {
       if (p._id !== product._id) return p;
       if (p.size !== product.size) return p;
-
-      //verificar cantidad maxima que no se exceda
 
       p.quantity += product.quantity;
       return p;
