@@ -32,7 +32,7 @@ import { AuthContext } from "../../context/auth/AuthContext";
 export const SideMenu = () => {
   const router = useRouter();
   const { isMenuOpen, toogleSideMenu } = useContext(UiContext);
-  const { isLoggedIn, user } = useContext(AuthContext);
+  const { isLoggedIn, user, logoutUser } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
 
   const onSearchTerm = () => {
@@ -120,14 +120,16 @@ export const SideMenu = () => {
           </ListItemButton>
 
           {isLoggedIn ? (
-            <ListItemButton>
+            <ListItemButton onClick={logoutUser}>
               <ListItemIcon>
                 <LoginOutlined />
               </ListItemIcon>
               <ListItemText primary={"Salir"} />
             </ListItemButton>
           ) : (
-            <ListItemButton>
+            <ListItemButton
+              onClick={() => navigateTo(`/auth/login?p=${router.asPath}`)}
+            >
               <ListItemIcon>
                 <VpnKeyOutlined />
               </ListItemIcon>

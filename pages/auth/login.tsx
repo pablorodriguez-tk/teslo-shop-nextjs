@@ -42,8 +42,9 @@ const LoginPage = () => {
       }, 3000);
       return;
     }
-    //TODO: navegar a la pantalla que el usuario estaba o a la home
-    router.replace("/");
+
+    const destination = router.query.p?.toString() || "/";
+    router.replace(destination);
   };
 
   return (
@@ -108,7 +109,15 @@ const LoginPage = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <NextLink href="/auth/register" passHref legacyBehavior>
+              <NextLink
+                href={
+                  router.query.p
+                    ? `/auth/register?p=${router.query.p}`
+                    : "/auth/register"
+                }
+                passHref
+                legacyBehavior
+              >
                 <Link style={{ textDecoration: "underline" }}>
                   ¿No tienes cuenta?
                 </Link>

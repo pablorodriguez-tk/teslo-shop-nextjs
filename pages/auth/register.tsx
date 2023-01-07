@@ -134,7 +134,15 @@ const RegisterPage = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <NextLink href="/auth/login" passHref legacyBehavior>
+              <NextLink
+                href={
+                  router.query.p
+                    ? `/auth/login?p=${router.query.p}`
+                    : "/auth/login"
+                }
+                passHref
+                legacyBehavior
+              >
                 <Link style={{ textDecoration: "underline" }}>
                   ¿Ya tienes cuenta?
                 </Link>
