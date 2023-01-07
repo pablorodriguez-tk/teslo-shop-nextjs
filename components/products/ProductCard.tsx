@@ -6,6 +6,7 @@ import {
   Box,
   Typography,
   Link,
+  Chip,
 } from "@mui/material";
 import NextLink from "next/link";
 import { FC, useMemo, useState } from "react";
@@ -44,6 +45,13 @@ export const ProductCard: FC<Props> = ({ product }) => {
         >
           <Link>
             <CardActionArea>
+              {product.inStock === 0 && (
+                <Chip
+                  color="primary"
+                  label="No hay disponibles"
+                  sx={{ position: "absolute", top: 10, left: 10, zIndex: 1 }}
+                />
+              )}
               <CardMedia
                 component="img"
                 className="fadeIn"
