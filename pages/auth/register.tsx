@@ -10,10 +10,11 @@ import {
 import { AuthLayout } from "../../components/layouts";
 import NextLink from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
-import { tesloApi } from "../../api";
+import { useContext, useState } from "react";
 import { validations } from "../../utils";
 import { ErrorOutline } from "@mui/icons-material";
+import { AuthContext } from "../../context";
+import { useRouter } from "next/router";
 
 type FormData = {
   name: string;
@@ -22,6 +23,8 @@ type FormData = {
 };
 
 const RegisterPage = () => {
+  const { registerUser } = useContext(AuthContext);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -29,6 +32,7 @@ const RegisterPage = () => {
   } = useForm<FormData>();
 
   const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onRegisterForm: SubmitHandler<FormData> = async ({
     email,
@@ -36,22 +40,19 @@ const RegisterPage = () => {
     name,
   }) => {
     setShowError(false);
-    try {
-      const { data } = await tesloApi.post("/user/register", {
-        name,
-        email,
-        password,
-      });
-      const { token, user } = data;
-      console.log({ token, user });
-    } catch (error) {
-      console.log("Error en las credenciales");
+    const { hasError, message } = await registerUser(name, email, password);
+
+    if (hasError) {
       setShowError(true);
+      setErrorMessage(message!);
       setTimeout(() => {
         setShowError(false);
       }, 3000);
+      return;
     }
+
     //TODO: navegar a la pantalla que el usuario estaba o a la home
+    router.replace("/");
   };
 
   return (
@@ -64,7 +65,7 @@ const RegisterPage = () => {
                 Crear cuenta
               </Typography>
               <Chip
-                label="Ocurrió un error al crear la cuenta"
+                label={errorMessage}
                 color="error"
                 icon={<ErrorOutline />}
                 className="fadeIn"

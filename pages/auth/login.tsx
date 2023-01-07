@@ -11,9 +11,10 @@ import { AuthLayout } from "../../components/layouts";
 import NextLink from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { validations } from "../../utils";
-import { tesloApi } from "../../api";
 import { ErrorOutline } from "@mui/icons-material";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context";
+import { useRouter } from "next/router";
 
 type FormData = {
   email: string;
@@ -21,6 +22,8 @@ type FormData = {
 };
 
 const LoginPage = () => {
+  const { loginUser } = useContext(AuthContext);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -31,18 +34,16 @@ const LoginPage = () => {
 
   const onLoginUser: SubmitHandler<FormData> = async ({ email, password }) => {
     setShowError(false);
-    try {
-      const { data } = await tesloApi.post("/user/login", { email, password });
-      const { token, user } = data;
-      console.log({ token, user });
-    } catch (error) {
-      console.log("Error en las credenciales");
+    const isValidLogin = await loginUser(email, password);
+    if (!isValidLogin) {
       setShowError(true);
       setTimeout(() => {
         setShowError(false);
       }, 3000);
+      return;
     }
     //TODO: navegar a la pantalla que el usuario estaba o a la home
+    router.replace("/");
   };
 
   return (
