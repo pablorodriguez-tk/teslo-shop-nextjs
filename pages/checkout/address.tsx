@@ -4,15 +4,18 @@ import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
   Grid,
+  InputLabel,
   MenuItem,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { CartContext } from "../../context";
 
 type FormData = {
@@ -26,16 +29,16 @@ type FormData = {
   phone: string;
 };
 
-const getAddressFromCookies = (): FormData => {
+const getAddressFromCookies = (cleanRender: boolean): FormData => {
   return {
-    firstName: Cookies.get("firstName") || "",
-    lastName: Cookies.get("lastName") || "",
-    address: Cookies.get("address") || "",
-    address2: Cookies.get("address2") || "",
-    zip: Cookies.get("zip") || "",
-    city: Cookies.get("city") || "",
-    country: Cookies.get("country") || "",
-    phone: Cookies.get("phone") || "",
+    firstName: cleanRender ? "" : Cookies.get("firstName") || "",
+    lastName: cleanRender ? "" : Cookies.get("lastName") || "",
+    address: cleanRender ? "" : Cookies.get("address") || "",
+    address2: cleanRender ? "" : Cookies.get("address2") || "",
+    zip: cleanRender ? "" : Cookies.get("zip") || "",
+    city: cleanRender ? "" : Cookies.get("city") || "",
+    country: cleanRender ? "" : Cookies.get("country") || "",
+    phone: cleanRender ? "" : Cookies.get("phone") || "",
   };
 };
 
@@ -47,9 +50,13 @@ const AddressPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: getAddressFromCookies(),
-  });
+    reset,
+    control,
+  } = useForm<FormData>({ defaultValues: { ...getAddressFromCookies(true) } });
+
+  useEffect(() => {
+    reset(getAddressFromCookies(false));
+  }, [reset]);
 
   const onSubmitAddress: SubmitHandler<FormData> = async (data) => {
     updateAddress(data);
@@ -135,25 +142,26 @@ const AddressPage = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <TextField
-                select
-                variant="filled"
-                label="País"
-                defaultValue={Cookies.get("country") || countries[0].code}
-                {...register("country", {
-                  required: "Este campo es requerido",
-                })}
-                error={!!errors.country}
-                helperText={errors.country?.message}
-              >
-                {countries.map((country) => (
-                  <MenuItem key={country.code} value={country.code}>
-                    {country.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </FormControl>
+            <Controller
+              control={control}
+              defaultValue={""}
+              {...register("country", {
+                required: "Este campo es requerido",
+              })}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.country}>
+                  <InputLabel>Country</InputLabel>
+                  <Select {...field} label="Country">
+                    {countries.map((country) => (
+                      <MenuItem key={country.code} value={country.code}>
+                        {country.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>{errors.country?.message}</FormHelperText>
+                </FormControl>
+              )}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

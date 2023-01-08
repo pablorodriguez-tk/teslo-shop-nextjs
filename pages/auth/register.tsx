@@ -15,6 +15,7 @@ import { validations } from "../../utils";
 import { ErrorOutline } from "@mui/icons-material";
 import { AuthContext } from "../../context";
 import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 
 type FormData = {
   name: string;
@@ -51,8 +52,11 @@ const RegisterPage = () => {
       return;
     }
 
-    //TODO: navegar a la pantalla que el usuario estaba o a la home
-    router.replace("/");
+    await signIn("credentials", {
+      email,
+      password,
+      callbackUrl: router.query.p?.toString() || "/",
+    });
   };
 
   return (
@@ -154,4 +158,5 @@ const RegisterPage = () => {
     </AuthLayout>
   );
 };
+
 export default RegisterPage;

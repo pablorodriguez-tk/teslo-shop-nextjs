@@ -1,24 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import * as jose from "jose";
+import { getToken } from "next-auth/jwt";
 
-export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
+export async function middleware(req: NextRequest) {
+  const session = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  try {
-    await jose.jwtVerify(
-      token || "",
-      new TextEncoder().encode(process.env.JWT_SECRET_SEED)
-    );
+  if (!session) {
+    const requestedPage = req.nextUrl.pathname;
+    const url = req.nextUrl.clone();
+    url.pathname = "/auth/login";
+    url.search = `p=${requestedPage}`;
 
-    return NextResponse.next();
-  } catch (error) {
-    console.error(`JWT Invalid or not signed in`, { error });
-    const { pathname } = request.nextUrl;
-    return NextResponse.redirect(
-      new URL(`/auth/login?p=${pathname}`, request.url)
-    );
+    return NextResponse.redirect(url);
   }
+
+  return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more

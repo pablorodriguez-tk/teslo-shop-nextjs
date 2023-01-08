@@ -114,7 +114,6 @@ export default ProductPage;
 // You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
 export const getStaticPaths: GetStaticPaths = async () => {
   const productSlugs = await dbProducts.getAllProductSlugs();
-  console.log(productSlugs);
   return {
     paths: productSlugs.map(({ slug }) => ({
       params: {
