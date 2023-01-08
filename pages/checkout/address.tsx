@@ -12,6 +12,8 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { useContext } from "react";
+import { CartContext } from "../../context";
 
 type FormData = {
   firstName: string;
@@ -38,6 +40,7 @@ const getAddressFromCookies = (): FormData => {
 };
 
 const AddressPage = () => {
+  const { updateAddress } = useContext(CartContext);
   const router = useRouter();
 
   const {
@@ -49,15 +52,7 @@ const AddressPage = () => {
   });
 
   const onSubmitAddress: SubmitHandler<FormData> = async (data) => {
-    Cookies.set("firstName", data.firstName);
-    Cookies.set("lastName", data.lastName);
-    Cookies.set("address", data.address);
-    Cookies.set("address2", data?.address2 || "");
-    Cookies.set("zip", data.zip);
-    Cookies.set("city", data.city);
-    Cookies.set("country", data.country);
-    Cookies.set("phone", data.phone);
-
+    updateAddress(data);
     router.push("/checkout/summary");
   };
 
@@ -145,7 +140,7 @@ const AddressPage = () => {
                 select
                 variant="filled"
                 label="País"
-                defaultValue={countries[1].code}
+                defaultValue={Cookies.get("country") || countries[0].code}
                 {...register("country", {
                   required: "Este campo es requerido",
                 })}
