@@ -49,6 +49,7 @@ const CartPage = () => {
                   className="circular-btn"
                   fullWidth
                   variant="contained"
+                  href="/checkout/address"
                 >
                   Checkout
                 </Button>
