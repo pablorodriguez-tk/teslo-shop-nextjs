@@ -10,6 +10,7 @@ export interface CartState {
   subTotal: number;
   tax: number;
   total: number;
+  shippingAddress?: IShippingAddress;
 }
 
 const CART_INITIAL_STATE: CartState = {
@@ -19,7 +20,19 @@ const CART_INITIAL_STATE: CartState = {
   subTotal: 0,
   tax: 0,
   total: 0,
+  shippingAddress: undefined,
 };
+
+export interface IShippingAddress {
+  firstName: string;
+  lastName: string;
+  address: string;
+  address2?: string;
+  zip: string;
+  city: string;
+  country: string;
+  phone: string;
+}
 
 export const CartProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, CART_INITIAL_STATE);
@@ -30,6 +43,25 @@ export const CartProvider: FC<PropsWithChildren> = ({ children }) => {
         type: "[Cart] - LoadCart from cookies | storage",
         payload: JSON.parse(Cookies.get("cart") || "[]"),
       });
+  }, []);
+
+  useEffect(() => {
+    if (Cookies.get("firstName")) {
+      const shippingAddress = {
+        firstName: Cookies.get("firstName") || "",
+        lastName: Cookies.get("lastName") || "",
+        address: Cookies.get("address") || "",
+        address2: Cookies.get("address2") || "",
+        zip: Cookies.get("zip") || "",
+        city: Cookies.get("city") || "",
+        country: Cookies.get("country") || "",
+        phone: Cookies.get("phone") || "",
+      };
+      dispatch({
+        type: "[Cart] - Load address from cookies",
+        payload: shippingAddress,
+      });
+    }
   }, []);
 
   useEffect(() => {
