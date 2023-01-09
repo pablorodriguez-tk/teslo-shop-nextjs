@@ -3,6 +3,7 @@ import { ICartProduct, IOrder, IShippingAddress } from "../../interfaces";
 import { CartContext, cartReducer } from "./";
 import Cookies from "js-cookie";
 import { tesloApi } from "../../api";
+import axios from "axios";
 
 export interface CartState {
   isLoaded: boolean;
@@ -146,7 +147,10 @@ export const CartProvider: FC<PropsWithChildren> = ({ children }) => {
     });
   };
 
-  const createOrder = async () => {
+  const createOrder = async (): Promise<{
+    hasError: boolean;
+    message: string;
+  }> => {
     if (!state.shippingAddress) {
       throw new Error("No hay dirección de entrega");
     }
@@ -166,9 +170,25 @@ export const CartProvider: FC<PropsWithChildren> = ({ children }) => {
 
     try {
       const { data } = await tesloApi.post("/orders", body);
-      console.log({ data });
+
+      dispatch({
+        type: "[Cart] - Order complete",
+      });
+      return {
+        hasError: false,
+        message: data._id!,
+      };
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        return {
+          hasError: true,
+          message: error.response?.data.message || "Error al crear la orden",
+        };
+      }
+      return {
+        hasError: true,
+        message: "Error no controlado, hable con el administrador",
+      };
     }
   };
 
