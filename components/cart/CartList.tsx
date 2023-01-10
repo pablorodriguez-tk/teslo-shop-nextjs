@@ -59,21 +59,21 @@ export const CartList: FC<Props> = ({ editable = false, products }) => {
               <Typography variant="body1">{product.title}</Typography>
               <Typography variant="body1">
                 Talla: <strong>{product.size}</strong>
-                {editable ? (
-                  <ItemCounter
-                    currentValue={product.quantity}
-                    updatedQuantity={(value) =>
-                      onNewCartQuantityValue(product as ICartProduct, value)
-                    }
-                    maxValue={10}
-                  />
-                ) : (
-                  <Typography variant="h4">
-                    {product.quantity}{" "}
-                    {product.quantity > 1 ? "productos" : "producto"}
-                  </Typography>
-                )}
               </Typography>
+              {editable ? (
+                <ItemCounter
+                  currentValue={product.quantity}
+                  updatedQuantity={(value) =>
+                    onNewCartQuantityValue(product as ICartProduct, value)
+                  }
+                  maxValue={10}
+                />
+              ) : (
+                <Typography variant="h4">
+                  {product.quantity}{" "}
+                  {product.quantity > 1 ? "productos" : "producto"}
+                </Typography>
+              )}
             </Box>
           </Grid>
           <Grid

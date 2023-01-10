@@ -49,7 +49,7 @@ const CartPage = () => {
                   className="circular-btn"
                   fullWidth
                   variant="contained"
-                  href="/checkout/address"
+                  onClick={() => router.push("/checkout/address")}
                 >
                   Checkout
                 </Button>

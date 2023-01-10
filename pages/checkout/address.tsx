@@ -142,26 +142,32 @@ const AddressPage = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Controller
-              control={control}
-              defaultValue={""}
-              {...register("country", {
-                required: "Este campo es requerido",
-              })}
-              render={({ field }) => (
-                <FormControl fullWidth error={!!errors.country}>
-                  <InputLabel>Country</InputLabel>
-                  <Select {...field} label="Country">
-                    {countries.map((country) => (
-                      <MenuItem key={country.code} value={country.code}>
-                        {country.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>{errors.country?.message}</FormHelperText>
-                </FormControl>
-              )}
-            />
+            <FormControl fullWidth variant="outlined" error={!!errors.country}>
+              <InputLabel htmlFor="country">Country</InputLabel>
+              <Controller
+                name="country"
+                control={control}
+                rules={{ required: "Este campo es requerido" }}
+                render={({ field: { onChange, value } }) => (
+                  <>
+                    <Select
+                      value={value}
+                      onChange={onChange}
+                      label="Country"
+                      labelId="country"
+                    >
+                      {countries.map((country) => (
+                        <MenuItem key={country.code} value={country.code}>
+                          {country.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText>{errors.country?.message}</FormHelperText>
+                  </>
+                )}
+                defaultValue=""
+              />
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
