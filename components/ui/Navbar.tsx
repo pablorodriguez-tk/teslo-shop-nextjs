@@ -22,7 +22,7 @@ import { CartContext, UiContext } from "../../context";
 
 export const Navbar = () => {
   const { toogleSideMenu } = useContext(UiContext);
-  const { cart, numberOfItems } = useContext(CartContext);
+  const { numberOfItems } = useContext(CartContext);
   const { asPath, push } = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");

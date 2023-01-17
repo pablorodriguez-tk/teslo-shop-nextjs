@@ -1,4 +1,4 @@
-import { ShopLayout } from "../../components/layouts/ShopLayout";
+import { ShopLayout } from "../../components/layouts";
 import { Box, Button, Chip, Grid, Typography } from "@mui/material";
 import { ProductSlideshow, SizeSelector } from "../../components/products";
 import { ItemCounter } from "../../components/ui";
