@@ -99,9 +99,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  db.connect();
+  await db.connect();
   const orders = await dbOrders.getOrderByUser(session.user._id);
-  db.disconnect();
+  await db.disconnect();
 
   return {
     props: { orders },
