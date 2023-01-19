@@ -22,6 +22,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  //TODO: analizar los roles
   const validRoles = ["admin", "super-user", "SEO"];
 
   if (request.nextUrl.pathname.startsWith("/admin")) {
