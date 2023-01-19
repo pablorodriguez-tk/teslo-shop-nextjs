@@ -1,15 +1,15 @@
 import { ConfirmationNumberOutlined } from "@mui/icons-material";
 import { Chip, Grid } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { AdminLayout } from "../../components/layouts";
-import { IOrder, IUser } from "../../interfaces";
+import { AdminLayout } from "../../../components/layouts";
+import { IOrder, IUser } from "../../../interfaces";
 import useSWR from "swr";
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "Orden ID", width: 250 },
-  { field: "email", headerName: "Correo", width: 250 },
-  { field: "name", headerName: "Nombre Completo", width: 300 },
-  { field: "total", headerName: "Monto total", width: 300 },
+  { field: "id", headerName: "Orden ID", width: 230 },
+  { field: "email", headerName: "Correo", width: 200 },
+  { field: "name", headerName: "Nombre Completo", width: 170 },
+  { field: "total", headerName: "Monto total", width: 100 },
   {
     field: "isPaid",
     headerName: "Pagada",
@@ -26,7 +26,7 @@ const columns: GridColDef[] = [
     field: "noProducts",
     headerName: "No.Productos",
     align: "center",
-    width: 150,
+    width: 120,
   },
   {
     field: "check",
@@ -43,16 +43,17 @@ const columns: GridColDef[] = [
   {
     field: "createdAt",
     headerName: "Creada en",
-    width: 300,
+    width: 200,
   },
 ];
 
 const OrdersPage = () => {
   const { data, error } = useSWR<IOrder[]>("/api/admin/orders");
 
-  if (!data && !error) return <></>;
+  if (error) return <p>Error al cargar la información</p>;
+  if (!data) return <></>;
 
-  const rows = data!.map((order) => ({
+  const rows = data.map((order) => ({
     id: order._id,
     email: (order.user as IUser).email,
     name: (order.user as IUser).name,

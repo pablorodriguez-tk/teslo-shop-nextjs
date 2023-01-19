@@ -35,7 +35,8 @@ const DashboardPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (!error && !data) return <p>Cargando...</p>;
+  if (error) return <p>Error al cargar la información</p>;
+  if (!data) return <p>Cargando...</p>;
 
   if (error) {
     console.log(error);
@@ -50,7 +51,7 @@ const DashboardPage = () => {
     numberOfProducts,
     productsWithNoInventory,
     lowInventory,
-  } = data!;
+  } = data;
 
   return (
     <AdminLayout

@@ -18,7 +18,8 @@ const UsersPage = () => {
     }
   }, [data]);
 
-  if (!data && !error) return <></>;
+  if (error) return <p>Error al cargar la información</p>;
+  if (!data) return <></>;
 
   const onRoleUpdated = async (userId: string, newRole: string) => {
     const previusUsers = users.map((user) => ({ ...user }));

@@ -23,12 +23,12 @@ import {
   MaleOutlined,
   SearchOutlined,
   VpnKeyOutlined,
+  DashboardOutlined,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import { UiContext } from "../../context";
 import { AuthContext } from "../../context/auth/AuthContext";
-import { DashboardOutlined } from "@mui/icons-material";
 
 export const SideMenu = () => {
   const router = useRouter();
