@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { GetServerSideProps } from "next";
 import { AdminLayout } from "../../../components/layouts";
-import { IProduct, ISize, IType } from "../../../interfaces";
+import { IGender, IProduct, ISize, IType } from "../../../interfaces";
 import {
   DriveFileRenameOutline,
   SaveOutlined,
@@ -21,15 +21,14 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormHelperText,
   FormLabel,
   Grid,
-  ListItem,
-  Paper,
   Radio,
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 const validTypes = ["shirts", "pants", "hoodies", "hats"];
 const validGender = ["men", "women", "kid", "unisex"];
@@ -46,7 +45,7 @@ interface FormData {
   tags: string[];
   title: string;
   type: IType;
-  gender: "men" | "women" | "kid" | "unisex";
+  gender: IGender;
 }
 
 interface Props {
@@ -58,6 +57,8 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
     register,
     handleSubmit,
     formState: { errors },
+
+    control,
   } = useForm({
     defaultValues: product,
   });
@@ -145,52 +146,82 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
 
             <Divider sx={{ my: 1 }} />
 
-            <FormControl sx={{ mb: 1 }}>
-              <FormLabel>Tipo</FormLabel>
-              <RadioGroup
-                row
-                // value={ status }
-                // onChange={ onStatusChanged }
-              >
-                {validTypes.map((option) => (
-                  <FormControlLabel
-                    key={option}
-                    value={option}
-                    control={<Radio color="secondary" />}
-                    label={capitalize(option)}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
+            <Controller
+              name="type"
+              control={control}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <FormControl sx={{ mb: 1 }}>
+                  <FormLabel>Tipo</FormLabel>
+                  <RadioGroup row {...field}>
+                    {validTypes.map((option) => (
+                      <FormControlLabel
+                        key={option}
+                        value={option}
+                        control={<Radio color="secondary" />}
+                        label={capitalize(option)}
+                      />
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+              )}
+            />
+            <Controller
+              name="gender"
+              control={control}
+              defaultValue={undefined}
+              render={({ field }) => (
+                <FormControl sx={{ mb: 1 }}>
+                  <FormLabel>Género</FormLabel>
+                  <RadioGroup row {...field}>
+                    {validGender.map((option) => (
+                      <FormControlLabel
+                        key={option}
+                        value={option}
+                        control={<Radio color="secondary" />}
+                        label={capitalize(option)}
+                      />
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+              )}
+            />
 
-            <FormControl sx={{ mb: 1 }}>
-              <FormLabel>Género</FormLabel>
-              <RadioGroup
-                row
-                // value={ status }
-                // onChange={ onStatusChanged }
-              >
-                {validGender.map((option) => (
-                  <FormControlLabel
-                    key={option}
-                    value={option}
-                    control={<Radio color="secondary" />}
-                    label={capitalize(option)}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-
-            <FormGroup>
-              <FormLabel>Tallas</FormLabel>
-              {validSizes.map((size) => (
-                <FormControlLabel
-                  key={size}
-                  control={<Checkbox />}
-                  label={size}
-                />
-              ))}
-            </FormGroup>
+            <Controller
+              name="sizes"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth margin="dense" error={!!errors.sizes}>
+                  <FormLabel>Tallas</FormLabel>
+                  <FormGroup>
+                    {validSizes.map((size) => (
+                      <FormControlLabel
+                        key={size}
+                        control={
+                          <Checkbox
+                            value={size}
+                            checked={field.value.some((val) => val === size)}
+                            onChange={({ target: { value } }, checked) => {
+                              if (checked) {
+                                field.onChange([...field.value, value]);
+                              } else {
+                                field.onChange(
+                                  field.value.filter((val) => val !== value)
+                                );
+                              }
+                            }}
+                          />
+                        }
+                        label={size}
+                      />
+                    ))}
+                  </FormGroup>
+                  <FormHelperText>
+                    {capitalize(`${(errors.sizes as any)?.message || ""}`)}
+                  </FormHelperText>
+                </FormControl>
+              )}
+            />
           </Grid>
 
           {/* Tags e imagenes */}
