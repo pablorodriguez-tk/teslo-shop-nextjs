@@ -11,6 +11,8 @@ export const getProductBySlug = async (
 
   if (!product) return null;
 
+  //TODO:  falta procesamiento de las imagenes al subir al server
+
   return JSON.parse(JSON.stringify(product));
 };
 

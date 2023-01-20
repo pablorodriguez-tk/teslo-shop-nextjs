@@ -78,6 +78,7 @@ export const SideMenu = () => {
                 <ListItemIcon>
                   <AccountCircleOutlined />
                 </ListItemIcon>
+                {/* TODO:Navegacion a pantalla perfil */}
                 <ListItemText primary={"Perfil"} />
               </ListItemButton>
 
@@ -149,7 +150,7 @@ export const SideMenu = () => {
                 </ListItemIcon>
                 <ListItemText primary={"Dashboard"} />
               </ListItemButton>
-              <ListItemButton onClick={() => navigateTo("/admin")}>
+              <ListItemButton onClick={() => navigateTo("/admin/products")}>
                 <ListItemIcon>
                   <CategoryOutlined />
                 </ListItemIcon>
