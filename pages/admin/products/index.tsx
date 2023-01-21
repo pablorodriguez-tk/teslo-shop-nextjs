@@ -76,6 +76,7 @@ const ProductsPage = () => {
           startIcon={<AddOutlined />}
           color="secondary"
           href="/admin/products/new"
+          variant="contained"
         >
           Crear producto
         </Button>

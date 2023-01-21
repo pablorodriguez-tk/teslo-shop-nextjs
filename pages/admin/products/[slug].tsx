@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { GetServerSideProps } from "next";
 import { AdminLayout } from "../../../components/layouts";
 import { IGender, IProduct, ISize, IType } from "../../../interfaces";
@@ -57,6 +57,7 @@ interface Props {
 
 const ProductAdminPage: FC<Props> = ({ product }) => {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
@@ -99,6 +100,20 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
   const onDeleteTag = (tag: string) => {
     const updatedTag = getValues("tags").filter((t) => t !== tag);
     setValue("tags", updatedTag, { shouldValidate: true });
+  };
+
+  const onFilesSelected = async ({ target }: ChangeEvent<HTMLInputElement>) => {
+    if (!target.files || target.files.length === 0) return;
+
+    try {
+      for (const file of target.files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const { data } = await tesloApi.post("/admin/uploads", formData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onSubmit = async (form: FormData) => {
@@ -341,9 +356,19 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
                 fullWidth
                 startIcon={<UploadOutlined />}
                 sx={{ mb: 3 }}
+                onClick={() => fileInputRef.current?.click()}
               >
                 Cargar imagen
               </Button>
+
+              <input
+                type="file"
+                multiple
+                accept="image/png, image/gif, image/jpeg"
+                style={{ display: "none" }}
+                ref={fileInputRef}
+                onChange={onFilesSelected}
+              />
 
               <Chip
                 label="Es necesario al 2 imagenes"
