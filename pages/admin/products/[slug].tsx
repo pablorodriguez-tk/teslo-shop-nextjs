@@ -30,6 +30,8 @@ import {
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { tesloApi } from "../../../api";
+import { Product } from "../../../models";
+import { useRouter } from "next/router";
 
 const validTypes = ["shirts", "pants", "hoodies", "hats"];
 const validGender = ["men", "women", "kid", "unisex"];
@@ -54,6 +56,7 @@ interface Props {
 }
 
 const ProductAdminPage: FC<Props> = ({ product }) => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -106,12 +109,11 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
     try {
       const { data } = await tesloApi({
         url: "/admin/products",
-        method: "PUT", //si tenemos un _id, actualizar, sino crear
+        method: form._id ? "PUT" : "POST",
         data: form,
       });
-      console.log(data);
       if (!form._id) {
-        //TODO: recargar el navegador
+        router.replace(`/admin/products/${data.slug}`);
       } else {
         setIsSaving(false);
       }
@@ -155,7 +157,6 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
               error={!!errors.title}
               helperText={errors.title?.message}
             />
-
             <TextField
               label="Descripción"
               variant="filled"
@@ -168,7 +169,6 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
               error={!!errors.description}
               helperText={errors.description?.message}
             />
-
             <TextField
               label="Inventario"
               type="number"
@@ -182,7 +182,6 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
               error={!!errors.inStock}
               helperText={errors.inStock?.message}
             />
-
             <TextField
               label="Precio"
               type="number"
@@ -196,9 +195,9 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
               error={!!errors.price}
               helperText={errors.price?.message}
             />
-
             <Divider sx={{ my: 1 }} />
-
+            {/* TODO:Revisar error controller en consola
+             */}
             <Controller
               name="type"
               control={control}
@@ -219,6 +218,8 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
                 </FormControl>
               )}
             />
+            {/* TODO:Revisar error controller en consola
+             */}
             <Controller
               name="gender"
               control={control}
@@ -239,7 +240,6 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
                 </FormControl>
               )}
             />
-
             <Controller
               name="sizes"
               control={control}
@@ -384,7 +384,16 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const { slug = "" } = query;
 
-  const product = await dbProducts.getProductBySlug(slug.toString());
+  let product: IProduct | null;
+  if (slug === "new") {
+    //crear un producto
+    const tempProduct = JSON.parse(JSON.stringify(new Product()));
+    delete tempProduct._id;
+    tempProduct.images = ["img1.jpg", "img2.jpg"];
+    product = tempProduct;
+  } else {
+    product = await dbProducts.getProductBySlug(slug.toString());
+  }
 
   if (!product) {
     return {
