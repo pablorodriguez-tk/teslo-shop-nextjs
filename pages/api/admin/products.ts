@@ -1,3 +1,4 @@
+import { isValidObjectId } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../database";
 import { IProduct } from "../../../interfaces";
@@ -7,7 +8,8 @@ type Data =
   | {
       message: string;
     }
-  | IProduct[];
+  | IProduct[]
+  | IProduct;
 
 export default function handler(
   req: NextApiRequest,
@@ -17,6 +19,7 @@ export default function handler(
     case "GET":
       return getProducts(req, res);
     case "PUT":
+      return updateProduct(req, res);
     case "POST":
     default:
       res.status(400).json({ message: "Bad request" });
@@ -29,4 +32,43 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await db.disconnect();
   res.status(200).json(products);
   //TODO: actualizar las imagenes
+};
+
+const updateProduct = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) => {
+  const { _id = "", images = [] } = req.body as IProduct;
+
+  if (!isValidObjectId(_id)) {
+    return res.status(400).json({ message: "El id del producto no es válido" });
+  }
+
+  if (images.length < 2) {
+    return res
+      .status(400)
+      .json({ message: "El producto debe tener al menos 2 imágenes" });
+  }
+
+  //TODO: posiblemente tendremos un localhost:3000/products/adsads.jpg
+
+  try {
+    await db.connect();
+    const product = await Product.findById(_id);
+
+    if (!product) {
+      await db.disconnect();
+      return res.status(400).json({ message: "El producto no existe" });
+    }
+
+    //TODO: eliminar fotos en cloudinary o minio (s3)
+
+    await product.updateOne(req.body);
+    await db.disconnect();
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    await db.disconnect();
+    res.status(500).json({ message: "Error al actualizar el producto" });
+  }
 };

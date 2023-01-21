@@ -29,8 +29,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { setConstantValue } from "typescript";
-import { getRandomValues } from "crypto";
+import { tesloApi } from "../../../api";
 
 const validTypes = ["shirts", "pants", "hoodies", "hats"];
 const validGender = ["men", "women", "kid", "unisex"];
@@ -68,6 +67,7 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
   });
 
   const [newTagValue, setNewTagValue] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
@@ -98,8 +98,27 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
     setValue("tags", updatedTag, { shouldValidate: true });
   };
 
-  const onSubmit = (form: FormData) => {
-    console.log(form);
+  const onSubmit = async (form: FormData) => {
+    if (form.images.length < 2)
+      return alert("Debe agregar al menos 2 imágenes");
+    setIsSaving(true);
+
+    try {
+      const { data } = await tesloApi({
+        url: "/admin/products",
+        method: "PUT", //si tenemos un _id, actualizar, sino crear
+        data: form,
+      });
+      console.log(data);
+      if (!form._id) {
+        //TODO: recargar el navegador
+      } else {
+        setIsSaving(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -115,6 +134,7 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
             startIcon={<SaveOutlined />}
             sx={{ width: "150px" }}
             type="submit"
+            disabled={isSaving}
           >
             Guardar
           </Button>

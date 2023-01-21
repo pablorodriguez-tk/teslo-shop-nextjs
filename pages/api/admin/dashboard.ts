@@ -42,12 +42,12 @@ const getDashboard = async (
     productsWithNoInventory,
     lowInventory,
   ] = await Promise.all([
-    Order.count(),
-    Order.find({ isPaid: true }).count(),
-    User.find({ role: "client" }).count(),
-    Product.count(),
-    Product.find({ inStock: 0 }).count(),
-    Product.find({ inStock: { $lte: 10 } }).count(),
+    Order.countDocuments(),
+    Order.find({ isPaid: true }).countDocuments(),
+    User.find({ role: "client" }).countDocuments(),
+    Product.countDocuments(),
+    Product.find({ inStock: 0 }).countDocuments(),
+    Product.find({ inStock: { $lte: 10 } }).countDocuments(),
   ]);
 
   await db.disconnect();
