@@ -1,0 +1,11 @@
+services:
+  app:
+    image: docker-nextjs
+    container_name: teslo-app-prod
+    restart: always
+    build:
+      dockerfile: Dockerfile
+    env_file:
+      - .env.production
+    ports:
+      - 3000:3000
