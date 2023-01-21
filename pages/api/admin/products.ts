@@ -21,6 +21,7 @@ export default function handler(
     case "PUT":
       return updateProduct(req, res);
     case "POST":
+      return createProduct(req, res);
     default:
       res.status(400).json({ message: "Bad request" });
   }
@@ -66,6 +67,43 @@ const updateProduct = async (
     await product.updateOne(req.body);
     await db.disconnect();
     res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    await db.disconnect();
+    res.status(500).json({ message: "Error al actualizar el producto" });
+  }
+};
+
+const createProduct = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) => {
+  const { _id = "", images = [] } = req.body as IProduct;
+
+  if (images.length < 2) {
+    return res
+      .status(400)
+      .json({ message: "El producto debe tener al menos 2 imágenes" });
+  }
+
+  //TODO: posiblemente tendremos un localhost:3000/products/adsads.jpg
+
+  try {
+    await db.connect();
+    const productInDB = await Product.findOne({ slug: req.body.slug });
+
+    if (productInDB) {
+      await db.disconnect();
+      return res.status(400).json({ message: "El producto ya existe" });
+    }
+
+    //TODO: eliminar fotos en cloudinary o minio (s3)
+
+    const product = new Product(req.body);
+    await product.save();
+
+    await db.disconnect();
+    res.status(201).json(product);
   } catch (error) {
     console.log(error);
     await db.disconnect();
