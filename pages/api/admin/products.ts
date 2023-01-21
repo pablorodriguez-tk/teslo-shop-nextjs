@@ -3,6 +3,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../database";
 import { IProduct } from "../../../interfaces";
 import { Product } from "../../../models";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  secure: true,
+});
 
 type Data =
   | {
@@ -31,8 +36,17 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await db.connect();
   const products = await Product.find().sort({ title: "asc" }).lean();
   await db.disconnect();
-  res.status(200).json(products);
-  //TODO: actualizar las imagenes
+
+  const updatedProducts = products.map((product) => {
+    product.images = product.images.map((image) => {
+      return image.includes("http")
+        ? image
+        : `${process.env.HOST_NAME}products/${image}`;
+    });
+    return product;
+  });
+
+  res.status(200).json(updatedProducts);
 };
 
 const updateProduct = async (
@@ -63,6 +77,20 @@ const updateProduct = async (
     }
 
     //TODO: eliminar fotos en cloudinary o minio (s3)
+
+    // https://res.cloudinary.com/drcq2kx3u/image/upload/v1674314097/jymqtqsdgelifi2dm7tr.webp
+
+    product.images.forEach(async (image) => {
+      if (!images.includes(image)) {
+        //Borrar de cloudinary
+        const [fileId, extension] = image
+          .substring(image.lastIndexOf("/") + 1)
+          .split(".");
+        if (fileId) {
+          await cloudinary.uploader.destroy(fileId);
+        }
+      }
+    });
 
     await product.updateOne(req.body);
     await db.disconnect();
