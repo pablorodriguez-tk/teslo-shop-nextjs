@@ -5,7 +5,7 @@ import { AdminLayout } from "../../components/layouts";
 import useSWR from "swr";
 import { IUser } from "../../interfaces";
 import MenuItem from "@mui/material/MenuItem";
-import tesloApi from "../../api/tesloApi";
+import tesloApi from "../../axiosApi/tesloApi";
 import { useEffect, useState } from "react";
 
 const UsersPage = () => {

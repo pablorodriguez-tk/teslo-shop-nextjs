@@ -20,7 +20,7 @@ import { dbOrders } from "../../database";
 import { IOrder } from "../../interfaces";
 import { countries } from "../../utils/countries";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import tesloApi from "../../api/tesloApi";
+import tesloApi from "../../axiosApi/tesloApi";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
