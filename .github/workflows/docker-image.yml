@@ -34,9 +34,11 @@ jobs:
       - name: Build Docker Image
         env:
           NEW_VERSION: ${{steps.version.outputs.version}}
+          PORT: ${{env.PORT}}
+          MONGO_URL: ${{secrets.MONGO_URL}}
         run: |
-          docker build --build-arg PORT=${{env.PORT}} --build-arg MONGO_URL=${{secrets.MONGO_URL}} -t pablorodriguez88/teslo-shop-nextjs-app:$NEW_VERSION .
-          docker build --build-arg PORT=${{env.PORT}} --build-arg MONGO_URL=${{secrets.MONGO_URL}} -t pablorodriguez88/teslo-shop-nextjs-app:latest .
+          docker build --build-arg PORT=$PORT --build-arg MONGO_URL=$MONGO_URL -t pablorodriguez88/teslo-shop-nextjs-app:$NEW_VERSION .
+          docker build --build-arg PORT=$PORT --build-arg MONGO_URL=$MONGO_URL -t pablorodriguez88/teslo-shop-nextjs-app:latest .
 
       - name: Push Docker Image
         env:
