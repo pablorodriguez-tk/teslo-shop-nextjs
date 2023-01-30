@@ -14,6 +14,10 @@ RUN npm ci
 
 FROM node:16-alpine AS builder
 RUN apk add --no-cache libc6-compat
+ARG PORT
+ARG MONGO_URL
+ENV PORT $PORT
+ENV MONGO_URL $MONGO_URL
 WORKDIR /app
 COPY --from=dev-deps /app/node_modules ./node_modules
 COPY . .
@@ -28,10 +32,6 @@ RUN npm ci --only=prod
 FROM node:16-alpine AS prod
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-ARG PORT
-ARG MONGO_URL
-ENV PORT $PORT
-ENV MONGO_URL $MONGO_URL
 ENV NODE_ENV production
 
 RUN addgroup --system --gid 1001 nodejs
