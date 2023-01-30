@@ -38,8 +38,8 @@ jobs:
           HOST_NAME: ${{env.HOST_NAME}}
           MONGO_URL: ${{secrets.MONGO_URL}}
           CLOUDINARY_URL: ${{secrets.CLOUDINARY_URL}}
-          GH_ID: ${{secrets.GH_ID}}
-          GH_SECRET: ${{secrets.GH_SECRET}}
+          GITHUB_ID: ${{secrets.GH_ID}}
+          GITHUB_SECRET: ${{secrets.GH_SECRET}}
           JWT_SECRET_SEED: ${{secrets.JWT_SECRET_SEED}}
           NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
           NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${{secrets.NEXT_PUBLIC_PAYPAL_CLIENT_ID}}
@@ -50,8 +50,8 @@ jobs:
           STAGE: ${{env.STAGE}}
           NEXTAUTH_URL: ${{env.NEXTAUTH_URL}}
         run: |
-          docker build --build-arg PORT=$PORT --build-arg HOST_NAME=$HOST_NAME --build-arg MONGO_URL=$MONGO_URL --build-arg CLOUDINARY_URL=$CLOUDINARY_URL --build-arg GH_ID=$GH_ID --build-arg GH_SECRET=$GH_SECRET --build-arg JWT_SECRET_SEED=$JWT_SECRET_SEED --build-arg NEXTAUTH_SECRET=$NEXTAUTH_SECRET --build-arg NEXT_PUBLIC_PAYPAL_CLIENT_ID=$NEXT_PUBLIC_PAYPAL_CLIENT_ID --build-arg PAYPAL_OAUTH_URL=$PAYPAL_OAUTH_URL --build-arg PAYPAL_ORDERS_URL=$PAYPAL_ORDERS_URL --build-arg PAYPAL_SECRET=$PAYPAL_SECRET --build-arg NEXT_PUBLIC_TAX_RATE=$NEXT_PUBLIC_TAX_RATE --build-arg STAGE=$STAGE --build-arg NEXTAUTH_URL=$NEXTAUTH_URL -t pablorodriguez88/teslo-shop-nextjs-app:$NEW_VERSION .
-          docker build --build-arg PORT=$PORT --build-arg HOST_NAME=$HOST_NAME --build-arg MONGO_URL=$MONGO_URL --build-arg CLOUDINARY_URL=$CLOUDINARY_URL --build-arg GH_ID=$GH_ID --build-arg GH_SECRET=$GH_SECRET --build-arg JWT_SECRET_SEED=$JWT_SECRET_SEED --build-arg NEXTAUTH_SECRET=$NEXTAUTH_SECRET --build-arg NEXT_PUBLIC_PAYPAL_CLIENT_ID=$NEXT_PUBLIC_PAYPAL_CLIENT_ID --build-arg PAYPAL_OAUTH_URL=$PAYPAL_OAUTH_URL --build-arg PAYPAL_ORDERS_URL=$PAYPAL_ORDERS_URL --build-arg PAYPAL_SECRET=$PAYPAL_SECRET --build-arg NEXT_PUBLIC_TAX_RATE=$NEXT_PUBLIC_TAX_RATE --build-arg STAGE=$STAGE --build-arg NEXTAUTH_URL=$NEXTAUTH_URL -t pablorodriguez88/teslo-shop-nextjs-app:latest .
+          docker build --build-arg PORT=$PORT --build-arg HOST_NAME=$HOST_NAME --build-arg MONGO_URL=$MONGO_URL --build-arg CLOUDINARY_URL=$CLOUDINARY_URL --build-arg GITHUB_ID=$GITHUB_ID --build-arg GITHUB_SECRET=$GITHUB_SECRET --build-arg JWT_SECRET_SEED=$JWT_SECRET_SEED --build-arg NEXTAUTH_SECRET=$NEXTAUTH_SECRET --build-arg NEXT_PUBLIC_PAYPAL_CLIENT_ID=$NEXT_PUBLIC_PAYPAL_CLIENT_ID --build-arg PAYPAL_OAUTH_URL=$PAYPAL_OAUTH_URL --build-arg PAYPAL_ORDERS_URL=$PAYPAL_ORDERS_URL --build-arg PAYPAL_SECRET=$PAYPAL_SECRET --build-arg NEXT_PUBLIC_TAX_RATE=$NEXT_PUBLIC_TAX_RATE --build-arg STAGE=$STAGE --build-arg NEXTAUTH_URL=$NEXTAUTH_URL -t pablorodriguez88/teslo-shop-nextjs-app:$NEW_VERSION .
+          docker build --build-arg PORT=$PORT --build-arg HOST_NAME=$HOST_NAME --build-arg MONGO_URL=$MONGO_URL --build-arg CLOUDINARY_URL=$CLOUDINARY_URL --build-arg GITHUB_ID=$GITHUB_ID --build-arg GITHUB_SECRET=$GITHUB_SECRET --build-arg JWT_SECRET_SEED=$JWT_SECRET_SEED --build-arg NEXTAUTH_SECRET=$NEXTAUTH_SECRET --build-arg NEXT_PUBLIC_PAYPAL_CLIENT_ID=$NEXT_PUBLIC_PAYPAL_CLIENT_ID --build-arg PAYPAL_OAUTH_URL=$PAYPAL_OAUTH_URL --build-arg PAYPAL_ORDERS_URL=$PAYPAL_ORDERS_URL --build-arg PAYPAL_SECRET=$PAYPAL_SECRET --build-arg NEXT_PUBLIC_TAX_RATE=$NEXT_PUBLIC_TAX_RATE --build-arg STAGE=$STAGE --build-arg NEXTAUTH_URL=$NEXTAUTH_URL -t pablorodriguez88/teslo-shop-nextjs-app:latest .
 
       - name: Push Docker Image
         env:
