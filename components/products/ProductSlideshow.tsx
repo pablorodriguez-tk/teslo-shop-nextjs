@@ -11,6 +11,7 @@ export const ProductSlideshow: FC<Props> = ({ images }) => {
   return (
     <Slide easing="ease" duration={7000} indicators>
       {images.map((image) => {
+        console.log(image);
         return (
           <div className={styles["each-slice"]} key={image}>
             <div
