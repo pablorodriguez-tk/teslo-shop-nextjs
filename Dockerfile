@@ -16,8 +16,10 @@ FROM node:16-alpine AS builder
 RUN apk add --no-cache libc6-compat
 ARG PORT
 ARG MONGO_URL
+ARG HOST_NAME
 ENV PORT $PORT
 ENV MONGO_URL $MONGO_URL
+ENV HOST_NAME $HOST_NAME
 WORKDIR /app
 COPY --from=dev-deps /app/node_modules ./node_modules
 COPY . .
