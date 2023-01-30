@@ -4,10 +4,12 @@ services:
   app:
     build:
       context: .
-      target: prod
+      target: dev
       dockerfile: Dockerfile
-    image: pablorodriguez88/teslo-shop-nextjs-app:1.0.0
-    container_name: teslo-app-prod
+    volumes:
+      - .:/app/
+      - /app/node_modules
+    container_name: teslo-app-dev
     ports:
       - ${PORT}:${PORT}
     environment:
@@ -25,3 +27,12 @@ services:
       CLOUDINARY_URL: ${CLOUDINARY_URL}
       PORT: ${PORT}
       STAGE: ${STAGE}
+    depends_on:
+      - teslodb
+  teslodb:
+    image: mongo:5.0.0
+    container_name: teslo-database-dev
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo:/data/db
