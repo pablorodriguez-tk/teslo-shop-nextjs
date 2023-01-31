@@ -1,5 +1,12 @@
 
 FROM node:16-alpine AS dev
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+CMD ["npm", "run", "dev"]
+
+FROM node:16-alpine AS dev-deps
 ARG PORT
 ARG MONGO_URL
 ARG HOST_NAME
@@ -32,13 +39,6 @@ ENV NEXT_PUBLIC_TAX_RATE $NEXT_PUBLIC_TAX_RATE
 ENV STAGE $STAGE
 ENV NEXTAUTH_URL $NEXTAUTH_URL
 
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-CMD ["npm", "run", "dev"]
-
-FROM node:16-alpine AS dev-deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
