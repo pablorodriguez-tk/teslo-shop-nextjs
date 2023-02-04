@@ -32,25 +32,36 @@ const getDashboard = async (
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ): Promise<void> => {
-  await db.connect();
+  let numberOfOrders = 0;
+  let paidOrders = 0;
+  let numberOfClients = 0;
+  let numberOfProducts = 0;
+  let productsWithNoInventory = 0;
+  let lowInventory = 0;
 
-  const [
-    numberOfOrders,
-    paidOrders,
-    numberOfClients,
-    numberOfProducts,
-    productsWithNoInventory,
-    lowInventory,
-  ] = await Promise.all([
-    Order.countDocuments(),
-    Order.find({ isPaid: true }).countDocuments(),
-    User.find({ role: "client" }).countDocuments(),
-    Product.countDocuments(),
-    Product.find({ inStock: 0 }).countDocuments(),
-    Product.find({ inStock: { $lte: 10 } }).countDocuments(),
-  ]);
+  try {
+    await db.connect();
 
-  await db.disconnect();
+    [
+      numberOfOrders,
+      paidOrders,
+      numberOfClients,
+      numberOfProducts,
+      productsWithNoInventory,
+      lowInventory,
+    ] = await Promise.all([
+      Order.countDocuments(),
+      Order.find({ isPaid: true }).countDocuments(),
+      User.find({ role: "client" }).countDocuments(),
+      Product.countDocuments(),
+      Product.find({ inStock: 0 }).countDocuments(),
+      Product.find({ inStock: { $lte: 10 } }).countDocuments(),
+    ]);
+
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+  }
 
   res.status(200).json({
     numberOfOrders,

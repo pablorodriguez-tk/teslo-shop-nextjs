@@ -33,6 +33,7 @@ const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { token = "" } = req.cookies;
 
   let userId = "";
+  let user = null;
 
   try {
     userId = await jwt.isValidToken(token);
@@ -40,9 +41,14 @@ const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(401).json({ message: "JWT no es válido" });
   }
 
-  await db.connect();
-  const user = await User.findById(userId).lean();
-  await db.disconnect();
+  try {
+    await db.connect();
+    user = await User.findById(userId).lean();
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error General" });
+  }
 
   if (!user) {
     return res.status(400).json({ message: "No existe usuario con ese id" });

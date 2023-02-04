@@ -202,8 +202,14 @@ export const getServerSideProps: GetServerSideProps = async ({
   query,
 }) => {
   const { id = "" } = query;
+  let session: any = null;
+  let order: IOrder | null = null;
 
-  const session: any = await getSession({ req });
+  try {
+    session = await getSession({ req });
+  } catch (error) {
+    console.log(error);
+  }
 
   if (!session) {
     return {
@@ -213,8 +219,11 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   }
-
-  const order = await dbOrders.getOrderById(id.toString());
+  try {
+    order = await dbOrders.getOrderById(id.toString());
+  } catch (error) {
+    console.log(error);
+  }
 
   if (!order) {
     return {

@@ -54,54 +54,60 @@ const payOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   //TODO: validad sesion del usuario
   //TODO: validar que el mongoID tenga un formato valido
 
-  const PAYPAL_ORDERS_URL = process.env.PAYPAL_ORDERS_URL || "";
+  try {
+    const PAYPAL_ORDERS_URL = process.env.PAYPAL_ORDERS_URL || "";
 
-  const paypalBearerToken = await getPaypalBearerToken();
+    const paypalBearerToken = await getPaypalBearerToken();
 
-  if (!paypalBearerToken) {
-    return res.status(500).json({ message: "Error al obtener el token" });
-  }
-
-  const { orderId = "", transactionId = "" } = req.body;
-
-  const { data } = await axios.get<IPaypal.PaypalOrderStatusResponse>(
-    `${PAYPAL_ORDERS_URL}/${transactionId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${paypalBearerToken}`,
-      },
+    if (!paypalBearerToken) {
+      return res.status(500).json({ message: "Error al obtener el token" });
     }
-  );
 
-  if (data.status !== "COMPLETED") {
-    return res.status(401).json({ message: "Orden no reconocida" });
-  }
+    const { orderId = "", transactionId = "" } = req.body;
 
-  await db.connect();
-  const dbOrder = await Order.findById(orderId);
+    const { data } = await axios.get<IPaypal.PaypalOrderStatusResponse>(
+      `${PAYPAL_ORDERS_URL}/${transactionId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${paypalBearerToken}`,
+        },
+      }
+    );
 
-  if (!dbOrder) {
+    if (data.status !== "COMPLETED") {
+      return res.status(401).json({ message: "Orden no reconocida" });
+    }
+
+    await db.connect();
+    const dbOrder = await Order.findById(orderId);
+
+    if (!dbOrder) {
+      await db.disconnect();
+      return res
+        .status(400)
+        .json({ message: "Orden no existe en nuestra base de datos" });
+    }
+
+    if (dbOrder.total !== Number(data.purchase_units[0].amount.value)) {
+      await db.disconnect();
+      return res
+        .status(400)
+        .json({
+          message: "Los montos de Paypal y nuestra orden no son iguales",
+        });
+    }
+
+    dbOrder.transactionId = transactionId;
+    dbOrder.isPaid = true;
+    await dbOrder.save();
     await db.disconnect();
-    return res
-      .status(400)
-      .json({ message: "Orden no existe en nuestra base de datos" });
+
+    //TODO: enviar email de confirmacion de orden al usuario
+    //TODO: enviar email de confirmacion de orden al admin
+    //TODO: en caso de venta virtual, enviar email con link de descarga o dar acceso a la descarga
+
+    return res.status(200).json({ message: "Orden pagada" });
+  } catch (error) {
+    console.log(error);
   }
-
-  if (dbOrder.total !== Number(data.purchase_units[0].amount.value)) {
-    await db.disconnect();
-    return res
-      .status(400)
-      .json({ message: "Los montos de Paypal y nuestra orden no son iguales" });
-  }
-
-  dbOrder.transactionId = transactionId;
-  dbOrder.isPaid = true;
-  await dbOrder.save();
-  await db.disconnect();
-
-  //TODO: enviar email de confirmacion de orden al usuario
-  //TODO: enviar email de confirmacion de orden al admin
-  //TODO: en caso de venta virtual, enviar email con link de descarga o dar acceso a la descarga
-
-  return res.status(200).json({ message: "Orden pagada" });
 };

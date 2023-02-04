@@ -3,10 +3,19 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  const session = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  let session = null;
+  try {
+    session = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+  } catch (error) {
+    console.log(error);
+    return {
+      hasError: true,
+      message: "Error no controlado, hable con el administrador",
+    };
+  }
 
   if (!session) {
     if (request.nextUrl.pathname.startsWith("/api/admin")) {

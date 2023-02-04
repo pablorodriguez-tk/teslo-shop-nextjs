@@ -25,20 +25,24 @@ const getProductBySlug = async (
 ) => {
   const { slug } = req.query;
 
-  await db.connect();
-  const product = await Product.findOne({
-    slug,
-  }).lean();
-  await db.disconnect();
+  try {
+    await db.connect();
+    const product = await Product.findOne({
+      slug,
+    }).lean();
+    await db.disconnect();
 
-  if (!product)
-    return res.status(404).json({ message: "Producto no encontrado" });
+    if (!product)
+      return res.status(404).json({ message: "Producto no encontrado" });
 
-  product.images = product.images.map((image) => {
-    return image.includes("http")
-      ? image
-      : `${process.env.HOST_NAME}products/${image}`;
-  });
+    product.images = product.images.map((image) => {
+      return image.includes("http")
+        ? image
+        : `${process.env.HOST_NAME}products/${image}`;
+    });
 
-  return res.status(200).json(product);
+    return res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+  }
 };

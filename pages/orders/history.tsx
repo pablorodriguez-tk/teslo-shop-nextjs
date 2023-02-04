@@ -88,20 +88,25 @@ const HistoryPage: NextPage<Props> = ({ orders }) => {
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session: any = await getSession({ req });
+  let orders: IOrder[] = [];
+  try {
+    const session: any = await getSession({ req });
 
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/login",
-        permanent: false,
-      },
-    };
+    if (!session) {
+      return {
+        redirect: {
+          destination: "/auth/login",
+          permanent: false,
+        },
+      };
+    }
+
+    await db.connect();
+    orders = await dbOrders.getOrderByUser(session.user._id);
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
   }
-
-  await db.connect();
-  const orders = await dbOrders.getOrderByUser(session.user._id);
-  await db.disconnect();
 
   return {
     props: { orders },

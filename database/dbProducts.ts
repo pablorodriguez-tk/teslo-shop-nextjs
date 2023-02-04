@@ -5,9 +5,14 @@ import { Product } from "../models";
 export const getProductBySlug = async (
   slug: string
 ): Promise<IProduct | null> => {
-  await db.connect();
-  const product = await Product.findOne({ slug }).lean();
-  await db.disconnect();
+  let product = null;
+  try {
+    await db.connect();
+    product = await Product.findOne({ slug }).lean();
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+  }
 
   if (!product) return null;
 
@@ -25,22 +30,34 @@ interface ProductSlug {
 }
 
 export const getAllProductSlugs = async (): Promise<ProductSlug[]> => {
-  await db.connect();
-  const slugs = await Product.find().select("slug -_id").lean();
-  await db.disconnect();
+  let slugs: ProductSlug[] = [];
+
+  try {
+    await db.connect();
+    slugs = await Product.find().select("slug -_id").lean();
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+  }
 
   return slugs;
 };
 
 export const getProductsByTerm = async (term: string): Promise<IProduct[]> => {
   term = term.toString().toLowerCase();
-  await db.connect();
-  const products = await Product.find({
-    $text: { $search: term },
-  })
-    .select("title images price inStock slug -_id")
-    .lean();
-  await db.disconnect();
+  let products: IProduct[] = [];
+
+  try {
+    await db.connect();
+    products = await Product.find({
+      $text: { $search: term },
+    })
+      .select("title images price inStock slug -_id")
+      .lean();
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+  }
 
   const updatedProducts = products.map((product) => {
     product.images = product.images.map((image) => {
@@ -55,9 +72,15 @@ export const getProductsByTerm = async (term: string): Promise<IProduct[]> => {
 };
 
 export const getAllProducts = async (): Promise<IProduct[]> => {
-  await db.connect();
-  const products = await Product.find().lean();
-  await db.disconnect();
+  let products: IProduct[] = [];
+
+  try {
+    await db.connect();
+    products = await Product.find().lean();
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+  }
 
   const updatedProducts = products.map((product) => {
     product.images = product.images.map((image) => {
