@@ -61,7 +61,7 @@ MONGO_URL=<String de conexion de produccion>
 3) docker compose -f docker-compose.prod.yml up -d
 ```
 
-## [Live Site](https://pokemon-static-app-nextjs.vercel.app)
+## [Live Site](https://shop.pablorodriguez.com.ar/)
 
 ![Teslo-Shop-App](https://res.cloudinary.com/drcq2kx3u/image/upload/v1675482851/GitHub/NextJs-Teslo/next-js-teslo.png)
 
