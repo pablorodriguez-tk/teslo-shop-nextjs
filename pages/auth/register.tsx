@@ -51,12 +51,15 @@ const RegisterPage = () => {
       }, 3000);
       return;
     }
-
-    await signIn("credentials", {
-      email,
-      password,
-      callbackUrl: router.query.p?.toString() || "/",
-    });
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: router.query.p?.toString() || "/",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

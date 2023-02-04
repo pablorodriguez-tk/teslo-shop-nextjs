@@ -27,22 +27,22 @@ export default function handler(
 const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { orderItems, total } = req.body as IOrder;
 
-  //verificar que tengamos un usuario logueado
-  const session: any = await getSession({ req });
-  if (!session) {
-    return res
-      .status(401)
-      .json({ message: "Debe de estar autenticado para crear una orden" });
-  }
-
-  //Crear un arreglo con los productos que la persona quiere comprar
-  const productsIds = orderItems.map((item) => item._id);
-
-  //Verificar que todos los productos que la persona quiere comprar existan
-  await db.connect();
-  const dbProducts = await Product.find({ _id: { $in: productsIds } });
-
   try {
+    //verificar que tengamos un usuario logueado
+    const session: any = await getSession({ req });
+    if (!session) {
+      return res
+        .status(401)
+        .json({ message: "Debe de estar autenticado para crear una orden" });
+    }
+
+    //Crear un arreglo con los productos que la persona quiere comprar
+    const productsIds = orderItems.map((item) => item._id);
+
+    //Verificar que todos los productos que la persona quiere comprar existan
+    await db.connect();
+    const dbProducts = await Product.find({ _id: { $in: productsIds } });
+
     const subTotal = orderItems.reduce((prev, current) => {
       const currentPrice = dbProducts.find(
         (product) =>

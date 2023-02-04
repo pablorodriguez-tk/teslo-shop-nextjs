@@ -25,11 +25,14 @@ export default function handler(
   }
 }
 const getUsers = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  await db.connect();
-  const users = await User.find().select("-password").lean();
-  await db.disconnect();
-
-  return res.status(200).json(users);
+  try {
+    await db.connect();
+    const users = await User.find().select("-password").lean();
+    await db.disconnect();
+    return res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const updateUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
@@ -47,17 +50,21 @@ const updateUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       .json({ message: "Rol no permitido" + validRoles.join(", ") });
   }
 
-  await db.connect();
+  try {
+    await db.connect();
 
-  const user = await User.findById(userId);
-  if (!user) {
+    const user = await User.findById(userId);
+    if (!user) {
+      await db.disconnect();
+      return res.status(400).json({ message: "No existe usuario con ese ID" });
+    }
+
+    user.role = role;
+    await user.save();
     await db.disconnect();
-    return res.status(400).json({ message: "No existe usuario con ese ID" });
+
+    return res.status(200).json({ message: "Usuario actualizado" });
+  } catch (error) {
+    console.log(error);
   }
-
-  user.role = role;
-  await user.save();
-  await db.disconnect();
-
-  return res.status(200).json({ message: "Usuario actualizado" });
 };

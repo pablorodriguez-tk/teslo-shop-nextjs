@@ -41,11 +41,16 @@ const LoginPage = () => {
 
   const onLoginUser: SubmitHandler<FormData> = async ({ email, password }) => {
     setShowError(false);
-    await signIn("credentials", {
-      email,
-      password,
-      callbackUrl: router.query.p?.toString() || "/",
-    });
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: router.query.p?.toString() || "/",
+      });
+    } catch (error) {
+      console.log(error);
+      setShowError(true);
+    }
   };
 
   return (

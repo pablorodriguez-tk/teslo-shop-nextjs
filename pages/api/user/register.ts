@@ -62,12 +62,16 @@ const registerUser = async (
     return res.status(400).json({ message: "El email no es válido" });
   }
 
-  await db.connect();
-  const user = await User.findOne({ email }).lean();
+  try {
+    await db.connect();
+    const user = await User.findOne({ email }).lean();
 
-  if (user) {
-    await db.disconnect();
-    return res.status(400).json({ message: "Ese email ya está registrado" });
+    if (user) {
+      await db.disconnect();
+      return res.status(400).json({ message: "Ese email ya está registrado" });
+    }
+  } catch (error) {
+    console.log(error);
   }
 
   const newUser = new User({

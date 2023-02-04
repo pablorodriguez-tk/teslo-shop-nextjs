@@ -22,13 +22,17 @@ export default function handler(
   }
 }
 const getOrders = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  await db.connect();
+  try {
+    await db.connect();
 
-  const orders = await Order.find()
-    .sort({ createdAt: "desc" })
-    .populate("user", "name email")
-    .lean();
+    const orders = await Order.find()
+      .sort({ createdAt: "desc" })
+      .populate("user", "name email")
+      .lean();
 
-  await db.disconnect();
-  return res.status(200).json(orders);
+    await db.disconnect();
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.log(error);
+  }
 };

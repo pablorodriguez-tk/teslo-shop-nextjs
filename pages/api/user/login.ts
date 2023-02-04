@@ -33,33 +33,41 @@ export default function handler(
 const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res
-      .status(400)
-      .json({ message: "Debe de especificar el email y el password" });
+  try {
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Debe de especificar el email y el password" });
+    }
+    await db.connect();
+    const user = await User.findOne({ email }).lean();
+    await db.disconnect();
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Email o contraseña incorrectos" });
+    }
+
+    if (!bcrypt.compareSync(password, user.password!)) {
+      return res
+        .status(400)
+        .json({ message: "Email o contraseña incorrectos" });
+    }
+
+    const { role, name, _id } = user;
+
+    const token = jwt.signToken(_id, email);
+
+    res.status(200).json({
+      token,
+      user: {
+        email,
+        name,
+        role,
+      },
+    });
+  } catch (error) {
+    console.log(error);
   }
-  await db.connect();
-  const user = await User.findOne({ email }).lean();
-  await db.disconnect();
-
-  if (!user) {
-    return res.status(400).json({ message: "Email o contraseña incorrectos" });
-  }
-
-  if (!bcrypt.compareSync(password, user.password!)) {
-    return res.status(400).json({ message: "Email o contraseña incorrectos" });
-  }
-
-  const { role, name, _id } = user;
-
-  const token = jwt.signToken(_id, email);
-
-  res.status(200).json({
-    token,
-    user: {
-      email,
-      name,
-      role,
-    },
-  });
 };

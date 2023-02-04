@@ -29,13 +29,18 @@ export default function handler(
   }
 }
 
-const saveFile = async (file: formidable.File): Promise<string> => {
+const saveFile = async (file: formidable.File): Promise<string | null> => {
   // const data = fs.readFileSync(file.filepath); // lee el archivo temporal que tenemos en el servidor
   // fs.writeFileSync(`./public/${file.originalFilename}`, data); // lo guardamos en la carpeta public con el nombre original
   // fs.unlinkSync(file.filepath); // borramos el archivo temporal
 
-  const { secure_url } = await cloudinary.uploader.upload(file.filepath, {});
-  return secure_url;
+  try {
+    const { secure_url } = await cloudinary.uploader.upload(file.filepath, {});
+    return secure_url;
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
 };
 
 const parseFiles = async (req: NextApiRequest): Promise<string> => {
@@ -46,13 +51,21 @@ const parseFiles = async (req: NextApiRequest): Promise<string> => {
       if (err) {
         return reject(err);
       }
-      const filePath = await saveFile(files.file as formidable.File);
-      resolve(filePath);
+      try {
+        const filePath = await saveFile(files.file as formidable.File);
+        filePath && resolve(filePath);
+      } catch (error) {
+        console.log(error);
+      }
     });
   });
 };
 
 const UploadFile = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  const imageUrl = await parseFiles(req);
-  return res.status(200).json({ message: imageUrl });
+  try {
+    const imageUrl = await parseFiles(req);
+    return res.status(200).json({ message: imageUrl });
+  } catch (error) {
+    console.log(error);
+  }
 };

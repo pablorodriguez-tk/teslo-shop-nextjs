@@ -60,6 +60,9 @@ export default SearchPage;
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const { query = "" } = params as { query: string };
 
+  let products: IProduct[] = [];
+  let foundProducts = false;
+
   if (query.length === 0) {
     return {
       redirect: {
@@ -69,13 +72,16 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     };
   }
 
-  let products = await dbProducts.getProductsByTerm(query);
+  try {
+    products = await dbProducts.getProductsByTerm(query);
 
-  const foundProducts = products.length > 0;
+    const foundProducts = products.length > 0;
 
-  if (!foundProducts) {
-    // products = await dbProducts.getAllProducts();
-    products = await dbProducts.getProductsByTerm("cybertruck");
+    if (!foundProducts) {
+      products = await dbProducts.getProductsByTerm("cybertruck");
+    }
+  } catch (error) {
+    console.log(error);
   }
 
   return {

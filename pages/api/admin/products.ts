@@ -33,20 +33,24 @@ export default function handler(
 }
 
 const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  await db.connect();
-  const products = await Product.find().sort({ title: "asc" }).lean();
-  await db.disconnect();
+  try {
+    await db.connect();
+    const products = await Product.find().sort({ title: "asc" }).lean();
+    await db.disconnect();
 
-  const updatedProducts = products.map((product) => {
-    product.images = product.images.map((image) => {
-      return image.includes("http")
-        ? image
-        : `${process.env.HOST_NAME}products/${image}`;
+    const updatedProducts = products.map((product) => {
+      product.images = product.images.map((image) => {
+        return image.includes("http")
+          ? image
+          : `${process.env.HOST_NAME}products/${image}`;
+      });
+      return product;
     });
-    return product;
-  });
 
-  res.status(200).json(updatedProducts);
+    res.status(200).json(updatedProducts);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const updateProduct = async (

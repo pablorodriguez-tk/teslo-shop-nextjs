@@ -424,7 +424,7 @@ const ProductAdminPage: FC<Props> = ({ product }) => {
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const { slug = "" } = query;
 
-  let product: IProduct | null;
+  let product: IProduct | null | undefined = null;
   if (slug === "new") {
     //crear un producto
     const tempProduct = JSON.parse(JSON.stringify(new Product()));
@@ -432,7 +432,11 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     tempProduct.images = ["img1.jpg", "img2.jpg"];
     product = tempProduct;
   } else {
-    product = await dbProducts.getProductBySlug(slug.toString());
+    try {
+      product = await dbProducts.getProductBySlug(slug.toString());
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   if (!product) {

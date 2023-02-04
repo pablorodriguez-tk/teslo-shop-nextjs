@@ -6,9 +6,14 @@ export const checkUserEmailPassword = async (
   email: string,
   password: string
 ) => {
-  await db.connect();
-  const user = await User.findOne({ email });
-  await db.disconnect();
+  let user = null;
+  try {
+    await db.connect();
+    user = await User.findOne({ email });
+    await db.disconnect();
+  } catch (error) {
+    console.log(error);
+  }
   if (!user) {
     return null;
   }
@@ -29,27 +34,36 @@ export const checkUserEmailPassword = async (
 //Esta funcion crea o verifica el usuario de OAuth
 
 export const oAuthToDbUser = async (oAuthEmail: string, oAuthName: string) => {
-  await db.connect();
-  const user = await User.findOne({
-    email: oAuthEmail.toLocaleLowerCase(),
-  });
+  let newUser = null;
 
-  if (user) {
+  try {
+    await db.connect();
+    const user = await User.findOne({
+      email: oAuthEmail.toLocaleLowerCase(),
+    });
+
+    if (user) {
+      await db.disconnect();
+      const { _id, name, email, role } = user;
+      return { _id, name, email, role };
+    }
+
+    newUser = new User({
+      email: oAuthEmail.toLocaleLowerCase(),
+      name: oAuthName,
+      password: "@",
+      role: "client",
+    });
+
+    await newUser.save();
     await db.disconnect();
-    const { _id, name, email, role } = user;
-    return { _id, name, email, role };
+  } catch (error) {
+    console.log(error);
   }
 
-  const newUser = new User({
-    email: oAuthEmail.toLocaleLowerCase(),
-    name: oAuthName,
-    password: "@",
-    role: "client",
-  });
-
-  await newUser.save();
-  await db.disconnect();
+  if (!newUser) return null;
 
   const { _id, name, email, role } = newUser;
+
   return { _id, name, email, role };
 };
